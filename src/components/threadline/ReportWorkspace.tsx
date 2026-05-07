@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Download as DownloadIcon, ChevronUp, Edit3 as EditIcon, CheckCircle2, Circle, AlertTriangle, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
-import { TEXT_PRIMARY, TEXT_SECONDARY, DIVIDER, BRAND, BRAND_LIGHT, ACCEPTED_BG, primaryBtn, outlineBtn, TYPE_SCALE } from "./constants";
+import { TEXT_PRIMARY, TEXT_SECONDARY, DIVIDER, BRAND, BRAND_LIGHT, ACCEPTED_BG, cardStyle, cardHeaderStyle, h1Style, subStyle, primaryBtn, outlineBtn, TYPE_SCALE } from "./constants";
 import { useFeatureFlags } from "../../contexts/FeatureToggleContext";
 import { useWorkspaceAlerts } from "../../contexts/WorkspaceAlertsContext";
 
@@ -9,7 +9,6 @@ import { AssessmentGate } from "./AssessmentGate";
 import { ReportSection } from "./components";
 import { SectionHeader } from "../common/SectionHeader";
 import { WorkspaceContainer } from "../common/WorkspaceContainer";
-import { ClientMetaBanner } from "../common/ClientMetaBanner";
 
 const REPORT_SECTIONS = ['Formulation', 'Evidence Summary', 'Caveats', 'Next Steps', 'Missing Information Notes'];
 
@@ -290,18 +289,45 @@ export function ReportWorkspace({ onNavigateToAssessments }: { onNavigateToAsses
           
           {/* Banner */}
           <div style={{ padding: "32px 40px", background: "white", borderBottom: `1px solid ${DIVIDER}` }}>
-            <ClientMetaBanner
-              fields={[
-                { label: "Client Name", value: "Liam Alexander O'Sullivan" },
-                { label: "Date of Report", value: "17 December 2025" },
-                { label: "Prepared By", value: "Threadline" },
-                { label: "Clinician", value: "[Clinician Name]" },
-                { label: "Session IDs Reviewed", value: "[IDs]" },
-                { isDivider: true, label: "", value: null },
-                { label: "Assessments Completed", value: <span style={{ color: BRAND }}>GAD-7, PHQ-9, SDS</span> },
-                { label: "Collateral Reviewed", value: <span style={{ color: BRAND }}>Teacher notes, psychological evaluation, referral letter</span>, colSpan: 2 },
-              ]}
-            />
+            <div style={{ 
+              display: "grid", 
+              gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", 
+              gap: 24,
+              padding: "24px",
+              background: BRAND_LIGHT,
+              borderRadius: 12,
+              border: `1px solid ${DIVIDER}`
+            }}>
+              <div>
+                <div style={{ ...TYPE_SCALE.LabelMicro, marginBottom: 4, color: TEXT_SECONDARY, textTransform: "uppercase", letterSpacing: "0.05em" }}>Client Name</div>
+                <div style={{ fontSize: 14, color: TEXT_PRIMARY, fontWeight: 600 }}>Liam Alexander O'Sullivan</div>
+              </div>
+              <div>
+                <div style={{ ...TYPE_SCALE.LabelMicro, marginBottom: 4, color: TEXT_SECONDARY, textTransform: "uppercase", letterSpacing: "0.05em" }}>Date of Report</div>
+                <div style={{ fontSize: 14, color: TEXT_PRIMARY, fontWeight: 500 }}>17 December 2025</div>
+              </div>
+              <div>
+                <div style={{ ...TYPE_SCALE.LabelMicro, marginBottom: 4, color: TEXT_SECONDARY, textTransform: "uppercase", letterSpacing: "0.05em" }}>Prepared By</div>
+                <div style={{ fontSize: 14, color: TEXT_PRIMARY, fontWeight: 500 }}>Threadline</div>
+              </div>
+              <div>
+                <div style={{ ...TYPE_SCALE.LabelMicro, marginBottom: 4, color: TEXT_SECONDARY, textTransform: "uppercase", letterSpacing: "0.05em" }}>Clinician</div>
+                <div style={{ fontSize: 14, color: TEXT_PRIMARY, fontWeight: 500 }}>[Clinician Name]</div>
+              </div>
+              <div>
+                <div style={{ ...TYPE_SCALE.LabelMicro, marginBottom: 4, color: TEXT_SECONDARY, textTransform: "uppercase", letterSpacing: "0.05em" }}>Session IDs Reviewed</div>
+                <div style={{ fontSize: 14, color: TEXT_PRIMARY, fontWeight: 500 }}>[IDs]</div>
+              </div>
+              <div style={{ gridColumn: "1 / -1", height: 1, background: DIVIDER, margin: "4px 0" }} />
+              <div>
+                <div style={{ ...TYPE_SCALE.LabelMicro, marginBottom: 4, color: TEXT_SECONDARY, textTransform: "uppercase", letterSpacing: "0.05em" }}>Assessments Completed</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: BRAND }}>GAD-7, PHQ-9, SDS</div>
+              </div>
+              <div style={{ gridColumn: "span 2" }}>
+                <div style={{ ...TYPE_SCALE.LabelMicro, marginBottom: 4, color: TEXT_SECONDARY, textTransform: "uppercase", letterSpacing: "0.05em" }}>Collateral Reviewed</div>
+                <div style={{ fontSize: 14, fontWeight: 600, color: BRAND }}>Teacher notes, psychological evaluation, referral letter</div>
+              </div>
+            </div>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", padding: "24px 40px", background: "#fcfcfc" }}>
