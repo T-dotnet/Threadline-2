@@ -1,21 +1,23 @@
 import React, { useState } from "react";
-import {
-  Plus as AddIcon,
-  Play,
-  SkipBack,
-  Volume2,
-  Maximize,
-  Maximize2,
-  Info,
-  X,
-  Copy,
+import { 
+  Plus as AddIcon, 
+  ChevronRight, 
+  Play, 
+  SkipBack, 
+  Volume2, 
+  Maximize, 
+  Maximize2, 
+  Info, 
+  X, 
+  Copy, 
   Edit3,
+  Search,
+  FileText,
   Calendar,
-  Download,
+  ArrowLeft as BackArrow,
+  Download as DownloadIcon
 } from "lucide-react";
-import { SearchInput } from "../common/SearchInput";
-import { TEXT_PRIMARY, TEXT_SECONDARY, TEXT_DISABLED, DIVIDER, primaryBtn, BRAND, BRAND_LIGHT, outlineBtn } from "./constants";
-import { DetailPageTemplate } from "./DetailPageTemplate";
+import { TEXT_PRIMARY, TEXT_SECONDARY, TEXT_DISABLED, DIVIDER, primaryBtn, BRAND, BRAND_LIGHT, outlineBtn, cardStyle, cardHeaderStyle, cardContentStyle, h1Style, subStyle, TYPE_SCALE } from "./constants";
 import { SimpleDropdown } from "../common/UIElements";
 import { EmptyState } from "../common/EmptyState";
 import { useFeatureFlags } from "../../contexts/FeatureToggleContext";
@@ -23,7 +25,8 @@ import { useFeatureFlags } from "../../contexts/FeatureToggleContext";
 import { MOCK_CLIENT_DATA, MOCK_CLIENTS } from "./mockData";
 
 import { SectionHeader } from "../common/SectionHeader";
-import { SessionCard } from "./components";
+import { StatusBadge } from "../common/StatusBadge";
+import { EntityCard } from "./components";
 
 export function SessionListWorkspace({
   selectedSession,
@@ -36,23 +39,15 @@ export function SessionListWorkspace({
 }) {
   const { flags, activeClientId } = useFeatureFlags();
   const [statusFilter, setStatusFilter] = useState("All Status");
-  const [search, setSearch] = useState("");
 
   const clientData = activeClientId ? MOCK_CLIENT_DATA[activeClientId] : null;
 
-  const allSessions = clientData?.sessions?.map((s, idx) => ({
+  const sessions = clientData?.sessions?.map((s, idx) => ({
     id: `#SESSION-${idx + 1}`,
     timestamp: s.date,
     description: s.focus,
     notes: s.notes
   })) || [];
-
-  const sessions = search.trim()
-    ? allSessions.filter((s) =>
-        s.description?.toLowerCase().includes(search.toLowerCase()) ||
-        s.id.toLowerCase().includes(search.toLowerCase())
-      )
-    : allSessions;
 
   if (selectedSession) {
     return <SessionDetail session={selectedSession} onBack={onBack} />;
@@ -79,11 +74,14 @@ export function SessionListWorkspace({
               width={200}
             />
 
-            <SearchInput
-              value={search}
-              onChange={setSearch}
-              placeholder="Search sessions..."
-            />
+            <div style={{ position: "relative", width: 320 }}>
+              <Search style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#9ca3af" }} size={18} />
+              <input 
+                type="text" 
+                placeholder="Search sessions..." 
+                style={{ width: "100%", height: 44, padding: "0 16px 0 40px", border: `1px solid ${DIVIDER}`, borderRadius: 4, fontSize: 14, outline: "none" }} 
+              />
+            </div>
           </div>
         
         <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 20 }}>
@@ -97,15 +95,20 @@ export function SessionListWorkspace({
               style={{ padding: "100px 24px" }}
             />
           ) : (
-            sessions.map((s) => (
-              <SessionCard
+            sessions.map((s, i) => (
+              <EntityCard
                 key={s.id}
-                id={s.id}
-                title={s.description}
-                date={s.timestamp}
-                summary={s.notes}
+                title={s.description || 'Session details'}
+                metadata={[
+                  { label: "Session ID", value: <span style={{ textTransform: "lowercase" }}>{s.id}</span> },
+                  { label: "Date", value: s.timestamp },
+                  ...(s.notes ? [{ label: "Session Summary", value: s.notes }] : [])
+                ]}
+                statusBadge={<StatusBadge status="completed" />}
+                rightAction={<ChevronRight size={24} color={TEXT_SECONDARY} />}
                 onClick={() => onSessionSelect(s)}
-              />
+              >
+              </EntityCard>
             ))
           )}
         </div>
@@ -124,24 +127,41 @@ function SessionDetail({ session, onBack }: { session: any, onBack: () => void }
   const [activeTab, setActiveTab] = useState("Context");
 
   return (
-    <DetailPageTemplate
-      backLabel="Back to Sessions"
-      onBack={onBack}
-      title={session.description || 'Session Details'}
-      subtitle={`${session.id} • ${session.timestamp}`}
-      actionButton={
-        <button style={{ ...primaryBtn, flexShrink: 0 }}>
-          <Download size={18} /> Download Session Info
-        </button>
-      }
-      metaFields={[
-        { label: "Client Name", value: clientMeta?.name || "Maria Santos" },
-        { label: "Session Date", value: session.timestamp },
-        { label: "Date of Birth", value: "17 Dec 2001 (24y)" },
-        { label: "Clinician", value: "Dr. Marcus Thorne" },
-        { label: "Duration", value: "45 minutes" },
-      ]}
-    >
+    <div style={{ padding: "0 0 64px" }}>
+      <div style={{ ...cardStyle }}>
+        {/* Header */}
+        <div style={{ ...cardHeaderStyle, paddingBottom: 24 }}>
+          <div>
+            <button onClick={onBack} style={{ background: "none", border: "none", cursor: "pointer", color: BRAND, fontSize: 13, fontWeight: 600, padding: "0 0 12px", fontFamily: "'Poppins',sans-serif", display: "flex", alignItems: "center", gap: 6 }}>
+              <BackArrow size={16} /> Back to Sessions
+            </button>
+            <h1 style={{ ...h1Style, fontSize: 24, margin: "0 0 4px 0" }}>
+              {session.description || 'Session Details'}
+            </h1>
+            <p style={{ ...subStyle, margin: 0 }}>
+              {session.id} • {session.timestamp}
+            </p>
+          </div>
+          <button style={{ ...primaryBtn, flexShrink: 0 }}><DownloadIcon size={18} /> Download Session Info</button>
+        </div>
+
+        <div style={cardContentStyle}>
+          {/* Client info banner matching AssessmentResultScreen */}
+          <div style={{ background: "#f8fafc", border: `1px solid #f1f5f9`, borderRadius: 12, display: "flex", flexWrap: "wrap", marginBottom: 32 }}>
+            {[
+              { label: "Client Name", value: clientMeta?.name || "Maria Santos" },
+              { label: "Session Date", value: session.timestamp },
+              { label: "Date of Birth", value: "17 Dec 2001 (24y)" },
+              { label: "Clinician", value: "Dr. Marcus Thorne" },
+              { label: "Duration", value: "45 minutes" },
+            ].map(({ label, value }) => (
+              <div key={label} style={{ padding: "16px 24px", minWidth: 160, borderRight: `1px solid #f1f5f9` }}>
+                <div style={{ ...TYPE_SCALE.LabelMicro, marginBottom: 4 }}>{label}</div>
+                <div style={{ ...TYPE_SCALE.HeadingSmall }}>{value}</div>
+              </div>
+            ))}
+          </div>
+
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
             {/* Left Column: Video & Info */}
             <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -333,6 +353,8 @@ function SessionDetail({ session, onBack }: { session: any, onBack: () => void }
         </div>
       </div>
           </div>
-    </DetailPageTemplate>
+        </div>
+      </div>
+    </div>
   );
 }

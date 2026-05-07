@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sparkles, ChevronDown, ChevronRight, Calendar, FileText, Share2, Edit3 as EditIcon, MoreVertical } from 'lucide-react';
+import { Sparkles, ChevronDown, ChevronRight, Calendar, FileText, Share2, Edit3 as EditIcon } from 'lucide-react';
 import { BRAND, DIVIDER, TEXT_PRIMARY, TEXT_SECONDARY, TEXT_DISABLED, primaryBtn, outlineBtn, TYPE_SCALE } from './constants';
 
 export const ReportSection = ({ title, children, noBottomBorder, reviewKey, reviewBadge, noCollapse }: { title: string, children: React.ReactNode, noBottomBorder?: boolean, reviewKey?: string, reviewBadge?: React.ReactNode, noCollapse?: boolean }) => {
@@ -307,82 +307,25 @@ export interface AssessmentCardProps {
   descriptor?: string;
 }
 
-const JOIN_LINK = "https://telehealth.threadline.com.au/join/{sessionId}?token=...";
-
-function AssessmentLinkBox({ onCopy, copied }: { onCopy: () => void; copied: boolean }) {
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-      <span style={{ fontSize: 11, fontWeight: 600, color: TEXT_SECONDARY, letterSpacing: "0.05em", textTransform: "uppercase" }}>
-        Session Access
-      </span>
-      <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, display: "flex", alignItems: "center", padding: "6px 10px", gap: 8 }}>
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-          <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-        </svg>
-        <span style={{ fontSize: 12, color: TEXT_SECONDARY, maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontFamily: "monospace" }}>
-          {JOIN_LINK}
-        </span>
-        <button
-          onClick={onCopy}
-          style={{ background: copied ? "#f1f6f1" : "transparent", border: "none", color: copied ? "#059669" : BRAND, fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "'Poppins', sans-serif", padding: "2px 6px", borderRadius: 4 }}
-        >
-          {copied ? "Copied" : "Copy"}
-        </button>
-      </div>
-    </div>
-  );
-}
-
-export function AssessmentCard({
-  title,
-  subtitle,
-  status,
-  onViewResult,
-  description,
+export function AssessmentCard({ 
+  title, 
+  subtitle, 
+  status, 
+  onViewResult, 
+  date, 
+  description, 
   notes,
   overallImpression,
   score,
   percentile,
-  descriptor,
+  descriptor
 }: AssessmentCardProps) {
   const { flags } = useFeatureFlags();
   const [copied, setCopied] = React.useState(false);
-  const normalizedStatus = status.toLowerCase().replace(/\s+/g, '-');
-  const isCompleted = normalizedStatus === 'completed';
-  const isNotStarted = normalizedStatus === 'not-started';
-
-  const handleCopy = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1500);
-  };
-
-  const handleShare = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const link = `https://portal.threadline.com.au/assessment/${title.toLowerCase().replace(/\s+/g, '-')}`;
-    navigator.clipboard.writeText(link);
-    alert("Link copied to clipboard for sharing with client");
-  };
-
-  const rightAction = isCompleted ? (
-    <ThreadlineButton variant="outline" onClick={(e) => { e.stopPropagation(); onViewResult(); }} style={{ padding: "8px 20px", fontSize: 13 }}>
-      View Workspace
-    </ThreadlineButton>
-  ) : (
-    <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-      <AssessmentLinkBox onCopy={handleCopy} copied={copied} />
-      {isNotStarted ? (
-        <button onClick={handleShare} style={{ background: "transparent", color: BRAND, border: "none", padding: "6px 10px", fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontFamily: "'Poppins', sans-serif" }}>
-          <Share2 size={16} /> Share
-        </button>
-      ) : (
-        <ThreadlineButton variant="outline" onClick={(e) => { e.stopPropagation(); onViewResult(); }} style={{ padding: "6px 16px", fontSize: 13 }}>
-          View Workspace
-        </ThreadlineButton>
-      )}
-    </div>
-  );
+  const isStarted = status !== "Not Started";
+  const statusColor = isStarted ? "#2563eb" : TEXT_SECONDARY;
+  const statusBg = isStarted ? "#eff6ff" : "#f1f5f9";
+  const joinLink = "https://telehealth.threadline.com.au/join/{sessionId}?token=...";
 
   return (
     <EntityCard
@@ -394,17 +337,95 @@ export function AssessmentCard({
         ...(overallImpression ? [{ label: "Overall Impression", value: <span style={{ color: BRAND }}>{overallImpression}</span> }] : []),
         ...(score ? [{ label: "Score", value: score }] : []),
         ...(percentile ? [{ label: "Percentile", value: percentile }] : []),
-        ...(descriptor ? [{ label: "Descriptor", value: descriptor }] : []),
+        ...(descriptor ? [{ label: "Descriptor", value: descriptor }] : [])
       ]}
-      rightAction={rightAction}
-      onClick={isCompleted && !overallImpression ? onViewResult : undefined}
+      rightAction={
+        status.toLowerCase() !== 'completed' ? (
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <span style={{ fontSize: 11, fontWeight: 600, color: TEXT_SECONDARY, letterSpacing: "0.05em", textTransform: "uppercase" }}>Session Access</span>
+            <div style={{
+              background: "#f8fafc",
+              border: "1px solid #e2e8f0", 
+              borderRadius: 8,
+              display: "flex", alignItems: "center", padding: "6px 10px", gap: 8
+            }}>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+              </svg>
+              <span style={{ fontSize: 12, color: TEXT_SECONDARY, maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontFamily: "monospace" }}>
+                {joinLink}
+              </span>
+              <button 
+                onClick={(e) => { e.stopPropagation(); setCopied(true); setTimeout(() => setCopied(false), 1500); }} 
+                style={{
+                  background: copied ? "#f1f6f1" : "transparent", 
+                  border: "none", 
+                  color: copied ? "#059669" : BRAND,
+                  fontSize: 12, fontWeight: 700, cursor: "pointer",
+                  fontFamily: "'Poppins', sans-serif", padding: "2px 6px", borderRadius: 4
+                }}
+              >
+                {copied ? "Copied" : "Copy"}
+              </button>
+            </div>
+            {status.toLowerCase() === 'not-started' || status.toLowerCase() === 'not started' ? (
+              <button 
+                onClick={(e) => { 
+                  e.stopPropagation(); 
+                  const link = `https://portal.threadline.com.au/assessment/${title.toLowerCase().replace(/\s+/g, '-')}`;
+                  navigator.clipboard.writeText(link);
+                  alert("Link copied to clipboard for sharing with client");
+                }}
+                style={{ 
+                  background: "transparent", 
+                  color: BRAND, 
+                  border: "none", 
+                  padding: "6px 10px", 
+                  fontSize: 13, 
+                  fontWeight: 600, 
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  fontFamily: "'Poppins', sans-serif"
+                }}
+              >
+                <Share2 size={16} /> Share
+              </button>
+            ) : (
+                <ThreadlineButton variant="outline" onClick={(e) => { e.stopPropagation(); onViewResult(); }} style={{ padding: "6px 16px", fontSize: 13 }}>
+                  View Workspace
+                </ThreadlineButton>
+            )}
+          </div>
+        ) : (
+          <ThreadlineButton 
+            variant="outline"
+            onClick={(e) => { e.stopPropagation(); onViewResult(); }} 
+            style={{ padding: "8px 20px", fontSize: 13 }}
+          >
+            View Workspace
+          </ThreadlineButton>
+        )
+      }
+      onClick={status.toLowerCase() === 'completed' && !overallImpression ? onViewResult : undefined}
     >
+
       {flags.FEATURE_ASSESSMENT_DETAILS && (description || notes) && (
-        <div style={{ borderTop: `1px solid ${DIVIDER}`, paddingTop: 16, display: "flex", flexDirection: "column", gap: 12 }}>
+        <div style={{ 
+          borderTop: `1px solid ${DIVIDER}`, 
+          padding: "16px 0", 
+          display: "flex",
+          flexDirection: "column",
+          gap: 12
+        }}>
           {description && (
             <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
               <FileText size={16} stroke={TEXT_DISABLED} style={{ marginTop: 2 }} />
-              <div style={{ fontSize: 13, color: TEXT_PRIMARY, lineHeight: 1.5 }}>{description}</div>
+              <div style={{ fontSize: 13, color: TEXT_PRIMARY, lineHeight: 1.5 }}>
+                {description}
+              </div>
             </div>
           )}
           {notes && (
@@ -418,66 +439,6 @@ export function AssessmentCard({
         </div>
       )}
     </EntityCard>
-  );
-}
-
-export interface SessionCardProps {
-  id: string;
-  title: string;
-  date: string;
-  summary?: string;
-  onClick?: () => void;
-}
-
-export function SessionCard({ id, title, date, summary, onClick }: SessionCardProps) {
-  return (
-    <EntityCard
-      title={title || 'Session Details'}
-      statusBadge={<StatusBadge status="completed" />}
-      metadata={[
-        { label: "Session ID", value: <span style={{ textTransform: "lowercase" }}>{id}</span> },
-        { label: "Date", value: date },
-        ...(summary ? [{ label: "Session Summary", value: summary }] : []),
-      ]}
-      rightAction={<ChevronRight size={24} color={TEXT_SECONDARY} />}
-      onClick={onClick}
-    />
-  );
-}
-
-export interface DocumentCardProps {
-  name: string;
-  type?: string;
-  status: string;
-  creationDate: string;
-  uploadDate?: string;
-  onClick?: () => void;
-  onMenuClick?: (e: React.MouseEvent) => void;
-}
-
-export function DocumentCard({ name, type, status, creationDate, uploadDate, onClick, onMenuClick }: DocumentCardProps) {
-  const normalizedStatus = status.toLowerCase();
-  const isUploaded = normalizedStatus === 'uploaded';
-
-  return (
-    <EntityCard
-      title={name}
-      statusBadge={<StatusBadge status={normalizedStatus as any} />}
-      metadata={[
-        ...(isUploaded && type ? [{ label: "Type", value: type }] : []),
-        { label: "Creation Date", value: creationDate },
-        ...(isUploaded && uploadDate ? [{ label: "Upload Date", value: uploadDate }] : []),
-      ]}
-      rightAction={
-        <button
-          style={{ background: "none", border: "none", cursor: "pointer", color: "#9ca3af", padding: 8 }}
-          onClick={(e) => { e.stopPropagation(); onMenuClick?.(e); }}
-        >
-          <MoreVertical size={20} />
-        </button>
-      }
-      onClick={onClick}
-    />
   );
 }
 
