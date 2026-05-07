@@ -1,6 +1,6 @@
 import React from "react";
 import { ChevronLeft, Share2, MoreVertical } from "lucide-react";
-import { TEXT_PRIMARY, TEXT_SECONDARY, DIVIDER, outlineBtn, h1Style, subStyle } from "../threadline/constants";
+import { DIVIDER, outlineBtn, h1Style, subStyle } from "../../constants";
 import { StatusBadge, StatusType } from "./StatusBadge";
 
 interface WorkspaceHeaderProps {

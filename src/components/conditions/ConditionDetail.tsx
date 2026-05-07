@@ -6,9 +6,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { COLORS, ICON_PATHS, TABS } from "../../constants";
-import { 
-  BRAND, cardStyle, h1Style, subStyle, primaryBtn 
-} from "../threadline/constants";
+import { BRAND, cardStyle, h1Style, subStyle, primaryBtn } from "../../constants";
 
 import { Icon, StatusChip, GlChip, SimpleDropdown } from "../common/UIElements";
 import { Condition } from "../../types";

@@ -1,6 +1,6 @@
 import React from "react";
 import { AlertTriangle, FileX, Clock, CheckCircle, Plus as AddIcon } from "lucide-react";
-import { STATUS_CONFIG } from "../threadline/constants";
+import { STATUS_CONFIG } from "../../constants";
 
 export type StatusType = keyof typeof STATUS_CONFIG;
 
