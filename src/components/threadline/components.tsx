@@ -226,6 +226,7 @@ export interface EntityCardProps {
   metadata?: { label: string; value: React.ReactNode }[];
   summary?: React.ReactNode;
   rightAction?: React.ReactNode;
+  footer?: React.ReactNode;
   onClick?: () => void;
   children?: React.ReactNode;
   hoverable?: boolean;
@@ -237,18 +238,19 @@ export function EntityCard({
   metadata = [],
   summary,
   rightAction,
+  footer,
   onClick,
   children,
   hoverable = true,
 }: EntityCardProps) {
   const [isHovered, setIsHovered] = React.useState(false);
   return (
-    <div 
+    <div
       onClick={onClick}
-      style={{ 
-        background: "white", 
-        border: `1px solid ${isHovered && hoverable && onClick ? BRAND : '#f1f5f9'}`, 
-        borderRadius: 16, 
+      style={{
+        background: "white",
+        border: `1px solid ${isHovered && hoverable && onClick ? BRAND : '#f1f5f9'}`,
+        borderRadius: 16,
         overflow: "hidden",
         boxShadow: "0 1px 2px rgba(0,0,0,0.05)",
         transition: "all 0.2s ease",
@@ -266,7 +268,7 @@ export function EntityCard({
               <h3 style={{ fontSize: 20, fontWeight: 600, color: TEXT_PRIMARY, margin: 0, letterSpacing: "-0.01em" }}>{title}</h3>
               {statusBadge}
             </div>
-            
+
             {metadata.length > 0 && (
               <div style={{ fontSize: 13, color: TEXT_SECONDARY, lineHeight: 1.5, display: "flex", alignItems: "center", gap: 16, flexWrap: "wrap", marginTop: 4 }}>
                 {metadata.map((m, i) => (
@@ -274,20 +276,25 @@ export function EntityCard({
                 ))}
               </div>
             )}
-            
+
             {summary && (
               <div style={{ fontSize: 14, color: TEXT_SECONDARY, lineHeight: 1.5, marginTop: 12 }}>
                 {summary}
               </div>
             )}
           </div>
-          
+
           <div style={{ display: "flex", alignItems: "center", gap: 12, flexShrink: 0 }}>
             {rightAction}
           </div>
         </div>
         {children && <div style={{ marginTop: 20 }}>{children}</div>}
       </div>
+      {footer && (
+        <div style={{ borderTop: `1px solid ${DIVIDER}`, padding: "14px 28px", display: "flex", justifyContent: "flex-end", alignItems: "center", gap: 12, background: "#fafbfc" }}>
+          {footer}
+        </div>
+      )}
     </div>
   );
 }
@@ -307,13 +314,13 @@ export interface AssessmentCardProps {
   descriptor?: string;
 }
 
-export function AssessmentCard({ 
-  title, 
-  subtitle, 
-  status, 
-  onViewResult, 
-  date, 
-  description, 
+export function AssessmentCard({
+  title,
+  subtitle,
+  status,
+  onViewResult,
+  date,
+  description,
   notes,
   overallImpression,
   score,
@@ -322,122 +329,89 @@ export function AssessmentCard({
 }: AssessmentCardProps) {
   const { flags } = useFeatureFlags();
   const [copied, setCopied] = React.useState(false);
-  const isStarted = status !== "Not Started";
-  const statusColor = isStarted ? "#2563eb" : TEXT_SECONDARY;
-  const statusBg = isStarted ? "#eff6ff" : "#f1f5f9";
+  const isCompleted = status.toLowerCase() === 'completed';
+  const isNotStarted = status.toLowerCase() === 'not started' || status.toLowerCase() === 'not-started';
   const joinLink = "https://telehealth.threadline.com.au/join/{sessionId}?token=...";
+
+  const cardFooter = (
+    <>
+      {!isCompleted && (
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginRight: "auto" }}>
+          <span style={{ fontSize: 11, fontWeight: 600, color: TEXT_SECONDARY, letterSpacing: "0.05em", textTransform: "uppercase" }}>
+            Session Access
+          </span>
+          <div style={{ background: "#f8fafc", border: "1px solid #e2e8f0", borderRadius: 8, display: "flex", alignItems: "center", padding: "5px 10px", gap: 8 }}>
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+              <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+            </svg>
+            <span style={{ fontSize: 12, color: TEXT_SECONDARY, maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontFamily: "monospace" }}>
+              {joinLink}
+            </span>
+            <button
+              onClick={(e) => { e.stopPropagation(); setCopied(true); setTimeout(() => setCopied(false), 1500); }}
+              style={{ background: copied ? "#f1f6f1" : "transparent", border: "none", color: copied ? "#059669" : BRAND, fontSize: 12, fontWeight: 700, cursor: "pointer", fontFamily: "'Poppins', sans-serif", padding: "2px 6px", borderRadius: 4 }}
+            >
+              {copied ? "Copied" : "Copy"}
+            </button>
+          </div>
+        </div>
+      )}
+      {isNotStarted ? (
+        <button
+          onClick={(e) => {
+            e.stopPropagation();
+            const link = `https://portal.threadline.com.au/assessment/${title.toLowerCase().replace(/\s+/g, '-')}`;
+            navigator.clipboard.writeText(link);
+            alert("Link copied to clipboard for sharing with client");
+          }}
+          style={{ background: "transparent", color: BRAND, border: `1px solid ${BRAND}`, borderRadius: 8, padding: "6px 16px", fontSize: 13, fontWeight: 600, cursor: "pointer", display: "flex", alignItems: "center", gap: 6, fontFamily: "'Poppins', sans-serif" }}
+        >
+          <Share2 size={15} /> Share
+        </button>
+      ) : (
+        <ThreadlineButton variant="outline" onClick={(e) => { e.stopPropagation(); onViewResult(); }} style={{ padding: "6px 20px", fontSize: 13 }}>
+          View Workspace
+        </ThreadlineButton>
+      )}
+    </>
+  );
+
+  const detailsContent = flags.FEATURE_ASSESSMENT_DETAILS && (description || notes) ? (
+    <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      {description && (
+        <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+          <FileText size={15} stroke={TEXT_DISABLED} style={{ marginTop: 2, flexShrink: 0 }} />
+          <div style={{ fontSize: 13, color: TEXT_PRIMARY, lineHeight: 1.5 }}>{description}</div>
+        </div>
+      )}
+      {notes && (
+        <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
+          <Calendar size={15} stroke={TEXT_DISABLED} style={{ marginTop: 2, flexShrink: 0 }} />
+          <div style={{ fontSize: 13, color: TEXT_SECONDARY, lineHeight: 1.5 }}>
+            <span style={{ fontWeight: 600, color: TEXT_PRIMARY }}>Clinical Notes: </span>{notes}
+          </div>
+        </div>
+      )}
+    </div>
+  ) : null;
 
   return (
     <EntityCard
       title={title}
       summary={subtitle}
       statusBadge={<StatusBadge status={status as any} />}
-      hoverable={false}
+      hoverable={true}
       metadata={[
         ...(overallImpression ? [{ label: "Overall Impression", value: <span style={{ color: BRAND }}>{overallImpression}</span> }] : []),
         ...(score ? [{ label: "Score", value: score }] : []),
         ...(percentile ? [{ label: "Percentile", value: percentile }] : []),
         ...(descriptor ? [{ label: "Descriptor", value: descriptor }] : [])
       ]}
-      rightAction={
-        status.toLowerCase() !== 'completed' ? (
-          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-            <span style={{ fontSize: 11, fontWeight: 600, color: TEXT_SECONDARY, letterSpacing: "0.05em", textTransform: "uppercase" }}>Session Access</span>
-            <div style={{
-              background: "#f8fafc",
-              border: "1px solid #e2e8f0", 
-              borderRadius: 8,
-              display: "flex", alignItems: "center", padding: "6px 10px", gap: 8
-            }}>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-              </svg>
-              <span style={{ fontSize: 12, color: TEXT_SECONDARY, maxWidth: 120, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontFamily: "monospace" }}>
-                {joinLink}
-              </span>
-              <button 
-                onClick={(e) => { e.stopPropagation(); setCopied(true); setTimeout(() => setCopied(false), 1500); }} 
-                style={{
-                  background: copied ? "#f1f6f1" : "transparent", 
-                  border: "none", 
-                  color: copied ? "#059669" : BRAND,
-                  fontSize: 12, fontWeight: 700, cursor: "pointer",
-                  fontFamily: "'Poppins', sans-serif", padding: "2px 6px", borderRadius: 4
-                }}
-              >
-                {copied ? "Copied" : "Copy"}
-              </button>
-            </div>
-            {status.toLowerCase() === 'not-started' || status.toLowerCase() === 'not started' ? (
-              <button 
-                onClick={(e) => { 
-                  e.stopPropagation(); 
-                  const link = `https://portal.threadline.com.au/assessment/${title.toLowerCase().replace(/\s+/g, '-')}`;
-                  navigator.clipboard.writeText(link);
-                  alert("Link copied to clipboard for sharing with client");
-                }}
-                style={{ 
-                  background: "transparent", 
-                  color: BRAND, 
-                  border: "none", 
-                  padding: "6px 10px", 
-                  fontSize: 13, 
-                  fontWeight: 600, 
-                  cursor: "pointer",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  fontFamily: "'Poppins', sans-serif"
-                }}
-              >
-                <Share2 size={16} /> Share
-              </button>
-            ) : (
-                <ThreadlineButton variant="outline" onClick={(e) => { e.stopPropagation(); onViewResult(); }} style={{ padding: "6px 16px", fontSize: 13 }}>
-                  View Workspace
-                </ThreadlineButton>
-            )}
-          </div>
-        ) : (
-          <ThreadlineButton 
-            variant="outline"
-            onClick={(e) => { e.stopPropagation(); onViewResult(); }} 
-            style={{ padding: "8px 20px", fontSize: 13 }}
-          >
-            View Workspace
-          </ThreadlineButton>
-        )
-      }
-      onClick={status.toLowerCase() === 'completed' && !overallImpression ? onViewResult : undefined}
+      footer={cardFooter}
+      onClick={isCompleted && !overallImpression ? onViewResult : undefined}
     >
-
-      {flags.FEATURE_ASSESSMENT_DETAILS && (description || notes) && (
-        <div style={{ 
-          borderTop: `1px solid ${DIVIDER}`, 
-          padding: "16px 0", 
-          display: "flex",
-          flexDirection: "column",
-          gap: 12
-        }}>
-          {description && (
-            <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-              <FileText size={16} stroke={TEXT_DISABLED} style={{ marginTop: 2 }} />
-              <div style={{ fontSize: 13, color: TEXT_PRIMARY, lineHeight: 1.5 }}>
-                {description}
-              </div>
-            </div>
-          )}
-          {notes && (
-            <div style={{ display: "flex", gap: 8, alignItems: "flex-start" }}>
-              <Calendar size={16} stroke={TEXT_DISABLED} style={{ marginTop: 2 }} />
-              <div style={{ fontSize: 13, color: TEXT_SECONDARY, lineHeight: 1.5 }}>
-                <span style={{ fontWeight: 600, color: TEXT_PRIMARY }}>Clinical Notes: </span>{notes}
-              </div>
-            </div>
-          )}
-        </div>
-      )}
+      {detailsContent}
     </EntityCard>
   );
 }
