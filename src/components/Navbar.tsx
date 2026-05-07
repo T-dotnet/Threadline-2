@@ -9,7 +9,6 @@ import { Search } from "lucide-react";
 
 interface NavbarProps {
   onClientsClick?: () => void;
-  onPatientsClick?: () => void;
   onSessionsClick?: () => void;
   onAssessmentsClick?: () => void;
   onResourcesClick?: () => void;
@@ -20,17 +19,16 @@ interface NavbarProps {
   isAdminView?: boolean;
 }
 
-export function Navbar({ 
-  onClientsClick, 
-  onPatientsClick, 
-  onSessionsClick, 
+export function Navbar({
+  onClientsClick,
+  onSessionsClick,
   onAssessmentsClick,
-  onResourcesClick, 
-  onUsersClick, 
-  onConditionsClick, 
-  onAvatarClick, 
-  activeItem = "Conditions", 
-  isAdminView = false 
+  onResourcesClick,
+  onUsersClick,
+  onConditionsClick,
+  onAvatarClick,
+  activeItem = "Conditions",
+  isAdminView = false
 }: NavbarProps) {
   const navItems = ["Sessions", "Assessments"];
   if (isAdminView) {
@@ -110,7 +108,6 @@ export function Navbar({
             <button 
               key={item} 
               onClick={() => {
-                if (item === "Patients" && onPatientsClick) onPatientsClick();
                 if (item === "Sessions" && onSessionsClick) onSessionsClick();
                 if (item === "Assessments" && onAssessmentsClick) onAssessmentsClick();
                 if (item === "Resources" && onResourcesClick) onResourcesClick();

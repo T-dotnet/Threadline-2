@@ -6,9 +6,7 @@
 import { useState, useMemo } from "react";
 import { motion } from "motion/react";
 import { COLORS, ALL_CONDITIONS } from "../../constants";
-import { 
-  BRAND, cardStyle, h1Style, subStyle, primaryBtn 
-} from "../threadline/constants";
+import { BRAND, cardStyle, h1Style, subStyle, primaryBtn } from "../../constants";
 
 import { TableFooter } from "../common/TableFooter";
 import { FilterBar } from "./FilterBar";

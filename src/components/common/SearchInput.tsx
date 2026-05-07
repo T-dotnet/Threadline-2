@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Search, X } from "lucide-react";
-import { BRAND, DIVIDER } from "../threadline/constants";
+import { BRAND, DIVIDER } from "../../constants";
 
 export interface SearchInputProps {
   value: string;
