@@ -365,7 +365,7 @@ export function AssessmentCard({
       title={title}
       summary={subtitle}
       statusBadge={<StatusBadge status={status as any} />}
-      hoverable={false}
+      onClick={onViewResult}
       metadata={[
         ...(overallImpression ? [{ label: "Overall Impression", value: <span style={{ color: BRAND }}>{overallImpression}</span> }] : []),
         ...(score ? [{ label: "Score", value: score }] : []),
@@ -442,7 +442,6 @@ export function AssessmentCard({
           </ThreadlineButton>
         )
       }
-      onClick={status.toLowerCase() === 'completed' && !overallImpression ? onViewResult : undefined}
     >
 
       {flags.FEATURE_ASSESSMENT_DETAILS && (description || notes) && (
