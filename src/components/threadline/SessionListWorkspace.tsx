@@ -13,11 +13,11 @@ import {
   Edit3,
   FileText,
   Calendar,
-  ArrowLeft as BackArrow,
-  Download as DownloadIcon
+  Download,
 } from "lucide-react";
 import { SearchInput } from "../common/SearchInput";
-import { TEXT_PRIMARY, TEXT_SECONDARY, TEXT_DISABLED, DIVIDER, primaryBtn, BRAND, BRAND_LIGHT, outlineBtn, cardStyle, cardHeaderStyle, cardContentStyle, h1Style, subStyle, TYPE_SCALE } from "./constants";
+import { TEXT_PRIMARY, TEXT_SECONDARY, TEXT_DISABLED, DIVIDER, primaryBtn, BRAND, BRAND_LIGHT, outlineBtn } from "./constants";
+import { DetailPageTemplate } from "./DetailPageTemplate";
 import { SimpleDropdown } from "../common/UIElements";
 import { EmptyState } from "../common/EmptyState";
 import { useFeatureFlags } from "../../contexts/FeatureToggleContext";
@@ -132,41 +132,24 @@ function SessionDetail({ session, onBack }: { session: any, onBack: () => void }
   const [activeTab, setActiveTab] = useState("Context");
 
   return (
-    <div style={{ padding: "0 0 64px" }}>
-      <div style={{ ...cardStyle }}>
-        {/* Header */}
-        <div style={{ ...cardHeaderStyle, paddingBottom: 24 }}>
-          <div>
-            <button onClick={onBack} style={{ background: "none", border: "none", cursor: "pointer", color: BRAND, fontSize: 13, fontWeight: 600, padding: "0 0 12px", fontFamily: "'Poppins',sans-serif", display: "flex", alignItems: "center", gap: 6 }}>
-              <BackArrow size={16} /> Back to Sessions
-            </button>
-            <h1 style={{ ...h1Style, fontSize: 24, margin: "0 0 4px 0" }}>
-              {session.description || 'Session Details'}
-            </h1>
-            <p style={{ ...subStyle, margin: 0 }}>
-              {session.id} • {session.timestamp}
-            </p>
-          </div>
-          <button style={{ ...primaryBtn, flexShrink: 0 }}><DownloadIcon size={18} /> Download Session Info</button>
-        </div>
-
-        <div style={cardContentStyle}>
-          {/* Client info banner matching AssessmentResultScreen */}
-          <div style={{ background: "#f8fafc", border: `1px solid #f1f5f9`, borderRadius: 12, display: "flex", flexWrap: "wrap", marginBottom: 32 }}>
-            {[
-              { label: "Client Name", value: clientMeta?.name || "Maria Santos" },
-              { label: "Session Date", value: session.timestamp },
-              { label: "Date of Birth", value: "17 Dec 2001 (24y)" },
-              { label: "Clinician", value: "Dr. Marcus Thorne" },
-              { label: "Duration", value: "45 minutes" },
-            ].map(({ label, value }) => (
-              <div key={label} style={{ padding: "16px 24px", minWidth: 160, borderRight: `1px solid #f1f5f9` }}>
-                <div style={{ ...TYPE_SCALE.LabelMicro, marginBottom: 4 }}>{label}</div>
-                <div style={{ ...TYPE_SCALE.HeadingSmall }}>{value}</div>
-              </div>
-            ))}
-          </div>
-
+    <DetailPageTemplate
+      backLabel="Back to Sessions"
+      onBack={onBack}
+      title={session.description || 'Session Details'}
+      subtitle={`${session.id} • ${session.timestamp}`}
+      actionButton={
+        <button style={{ ...primaryBtn, flexShrink: 0 }}>
+          <Download size={18} /> Download Session Info
+        </button>
+      }
+      metaFields={[
+        { label: "Client Name", value: clientMeta?.name || "Maria Santos" },
+        { label: "Session Date", value: session.timestamp },
+        { label: "Date of Birth", value: "17 Dec 2001 (24y)" },
+        { label: "Clinician", value: "Dr. Marcus Thorne" },
+        { label: "Duration", value: "45 minutes" },
+      ]}
+    >
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 24 }}>
             {/* Left Column: Video & Info */}
             <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
@@ -358,8 +341,6 @@ function SessionDetail({ session, onBack }: { session: any, onBack: () => void }
         </div>
       </div>
           </div>
-        </div>
-      </div>
-    </div>
+    </DetailPageTemplate>
   );
 }
