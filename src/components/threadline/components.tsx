@@ -2,46 +2,79 @@ import React from 'react';
 import { Sparkles, ChevronDown, ChevronRight, Calendar, FileText, Share2, Edit3 as EditIcon } from 'lucide-react';
 import { BRAND, DIVIDER, TEXT_PRIMARY, TEXT_SECONDARY, TEXT_DISABLED, primaryBtn, outlineBtn, TYPE_SCALE } from './constants';
 
-export const ReportSection = ({ title, children, noBottomBorder, reviewKey, reviewBadge, noCollapse }: { title: string, children: React.ReactNode, noBottomBorder?: boolean, reviewKey?: string, reviewBadge?: React.ReactNode, noCollapse?: boolean }) => {
-  const [open, setOpen] = React.useState(true);
-  const isOpen = noCollapse || open;
-  
+function CollapsibleSection({
+  title,
+  open,
+  onToggle,
+  noCollapse = false,
+  bg = "white",
+  headerRight,
+  children,
+}: {
+  title: string;
+  open: boolean;
+  onToggle: () => void;
+  noCollapse?: boolean;
+  bg?: string;
+  headerRight?: React.ReactNode;
+  children: React.ReactNode;
+}) {
   return (
-    <div style={{ border: `1px solid #f1f5f9`, borderRadius: 12, background: "white", overflow: "hidden", marginBottom: 12 }}>
-      <div style={{
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "16px 20px", background: "transparent",
-      }}>
-        <div onClick={noCollapse ? undefined : () => setOpen(o => !o)} style={{
-          display: "flex", alignItems: "center", gap: 10,
-          background: "transparent", border: "none", cursor: noCollapse ? "default" : "pointer",
-          fontFamily: "'Poppins', sans-serif", fontSize: 15, fontWeight: 600, color: TEXT_PRIMARY, textAlign: "left", flex: 1
-        }}>
-          <div style={{ width: 8, height: 8, borderRadius: "50%", background: isOpen ? BRAND : "#cbd5e1" }} />
+    <div style={{ border: `1px solid #f1f5f9`, borderRadius: 12, background: bg, overflow: "hidden", marginBottom: 12 }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px 20px" }}>
+        <div
+          onClick={noCollapse ? undefined : onToggle}
+          style={{
+            display: "flex", alignItems: "center", gap: 10,
+            background: "transparent", border: "none", cursor: noCollapse ? "default" : "pointer",
+            fontFamily: "'Poppins', sans-serif", fontSize: 15, fontWeight: 600, color: TEXT_PRIMARY,
+            textAlign: "left", flex: 1
+          }}
+        >
+          <div style={{ width: 8, height: 8, borderRadius: "50%", background: open ? BRAND : "#cbd5e1" }} />
           <span>{title}</span>
           {!noCollapse && (
             <span style={{ color: TEXT_SECONDARY, display: "flex", alignItems: "center", marginLeft: 4 }}>
-              {isOpen ? (
-                <ChevronDown size={18} />
-              ) : (
-                <ChevronRight size={18} />
-              )}
+              {open ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
             </span>
           )}
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-          {reviewBadge}
-          <button style={{ background: "none", border: "none", cursor: "pointer", color: TEXT_SECONDARY, display: "flex", alignItems: "center" }}>
-            <EditIcon size={16} />
-          </button>
-        </div>
+        {headerRight && (
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            {headerRight}
+          </div>
+        )}
       </div>
-      {isOpen && (
+      {open && (
         <div style={{ padding: "0 20px 20px 38px" }}>
           {children}
         </div>
       )}
     </div>
+  );
+}
+
+export const ReportSection = ({ title, children, noBottomBorder, reviewKey, reviewBadge, noCollapse }: { title: string, children: React.ReactNode, noBottomBorder?: boolean, reviewKey?: string, reviewBadge?: React.ReactNode, noCollapse?: boolean }) => {
+  const [open, setOpen] = React.useState(true);
+  const isOpen = noCollapse || open;
+
+  return (
+    <CollapsibleSection
+      title={title}
+      open={isOpen}
+      onToggle={() => setOpen(o => !o)}
+      noCollapse={noCollapse}
+      headerRight={
+        <>
+          {reviewBadge}
+          <button style={{ background: "none", border: "none", cursor: "pointer", color: TEXT_SECONDARY, display: "flex", alignItems: "center" }}>
+            <EditIcon size={16} />
+          </button>
+        </>
+      }
+    >
+      {children}
+    </CollapsibleSection>
   );
 };
 import { useFeatureFlags } from "../../contexts/FeatureToggleContext";
@@ -448,60 +481,40 @@ export function InterpRow({ title, content, defaultOpen = false, bg = "white", e
   const [text, setText] = React.useState(content);
 
   return (
-    <div style={{ border: `1px solid #f1f5f9`, borderRadius: 12, background: bg, overflow: "hidden", marginBottom: 12 }}>
-      <div style={{
-        display: "flex", alignItems: "center", justifyContent: "space-between",
-        padding: "16px 20px", background: "transparent",
-      }}>
-        <button onClick={() => setOpen(o => !o)} style={{
-          display: "flex", alignItems: "center", gap: 10,
-          background: "transparent", border: "none", cursor: "pointer",
-          fontFamily: "'Poppins', sans-serif", fontSize: 15, fontWeight: 600, color: TEXT_PRIMARY, textAlign: "left", flex: 1
-        }}>
-          <div style={{ width: 8, height: 8, borderRadius: "50%", background: open ? BRAND : "#cbd5e1" }} />
-          <span>{title}</span>
-          <span style={{ color: TEXT_SECONDARY, display: "flex", alignItems: "center", marginLeft: 4 }}>
-            {open ? (
-              <ChevronDown size={18} />
-            ) : (
-              <ChevronRight size={18} />
-            )}
-          </span>
+    <CollapsibleSection
+      title={title}
+      open={open}
+      onToggle={() => setOpen(o => !o)}
+      bg={bg}
+      headerRight={editable ? (
+        <button
+          onClick={(e) => { e.stopPropagation(); setEditing(true); setOpen(true); }}
+          style={{ background: "none", border: "none", cursor: "pointer", color: TEXT_SECONDARY, display: "flex", alignItems: "center" }}
+        >
+          <EditIcon size={16} />
         </button>
-        {editable && (
-          <div style={{ display: "flex", alignItems: "center" }}>
-            <button onClick={(e) => { e.stopPropagation(); setEditing(true); setOpen(true); }} style={{ background: "none", border: "none", cursor: "pointer", color: TEXT_SECONDARY, display: "flex", alignItems: "center" }}>
-              <EditIcon size={16} />
-            </button>
+      ) : undefined}
+    >
+      {editing ? (
+        <div>
+          <textarea
+            value={text}
+            onChange={e => setText(e.target.value)}
+            style={{ width: "100%", minHeight: 120, padding: 12, fontSize: 14, fontFamily: "'Poppins', sans-serif", border: `1px solid #e2e8f0`, borderRadius: 8, resize: "vertical", boxSizing: "border-box", color: TEXT_PRIMARY, lineHeight: 1.6, outline: "none" }}
+          />
+          <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 12 }}>
+            <ThreadlineButton variant="outline" onClick={() => setEditing(false)}>Cancel</ThreadlineButton>
+            <ThreadlineButton variant="primary" onClick={() => setEditing(false)}>Save</ThreadlineButton>
           </div>
-        )}
-      </div>
-      {open && (
-        <div style={{ padding: "0 20px 20px 38px" }}>
-          {editing ? (
-            <div>
-              <textarea
-                value={text}
-                onChange={e => setText(e.target.value)}
-                style={{ width: "100%", minHeight: 120, padding: 12, fontSize: 14, fontFamily: "'Poppins', sans-serif", border: `1px solid #e2e8f0`, borderRadius: 8, resize: "vertical", boxSizing: "border-box", color: TEXT_PRIMARY, lineHeight: 1.6, outline: "none" }}
-              />
-              <div style={{ display: "flex", gap: 8, justifyContent: "flex-end", marginTop: 12 }}>
-                <ThreadlineButton variant="outline" onClick={() => setEditing(false)}>Cancel</ThreadlineButton>
-                <ThreadlineButton variant="primary" onClick={() => setEditing(false)}>Save</ThreadlineButton>
-              </div>
-            </div>
-          ) : (
-            <div style={{ display: "flex", alignItems: "flex-start", gap: 12 }}>
-              <div style={{ flex: 1, margin: 0, fontSize: 14, lineHeight: 1.6, fontFamily: "'Poppins', sans-serif", color: isNextStep && !text ? TEXT_SECONDARY : TEXT_PRIMARY }}>
-                {text || "Type next steps here..."}
-              </div>
-            </div>
-          )}
-          {!editing && !editable && (
-            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}><SysBadge /></div>
-          )}
+        </div>
+      ) : (
+        <div style={{ flex: 1, margin: 0, fontSize: 14, lineHeight: 1.6, fontFamily: "'Poppins', sans-serif", color: isNextStep && !text ? TEXT_SECONDARY : TEXT_PRIMARY }}>
+          {text || "Type next steps here..."}
         </div>
       )}
-    </div>
+      {!editing && !editable && (
+        <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 12 }}><SysBadge /></div>
+      )}
+    </CollapsibleSection>
   );
 }
