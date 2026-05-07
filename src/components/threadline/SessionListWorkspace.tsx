@@ -1,22 +1,22 @@
 import React, { useState } from "react";
-import { 
-  Plus as AddIcon, 
-  ChevronRight, 
-  Play, 
-  SkipBack, 
-  Volume2, 
-  Maximize, 
-  Maximize2, 
-  Info, 
-  X, 
-  Copy, 
+import {
+  Plus as AddIcon,
+  ChevronRight,
+  Play,
+  SkipBack,
+  Volume2,
+  Maximize,
+  Maximize2,
+  Info,
+  X,
+  Copy,
   Edit3,
-  Search,
   FileText,
   Calendar,
   ArrowLeft as BackArrow,
   Download as DownloadIcon
 } from "lucide-react";
+import { SearchInput } from "../common/SearchInput";
 import { TEXT_PRIMARY, TEXT_SECONDARY, TEXT_DISABLED, DIVIDER, primaryBtn, BRAND, BRAND_LIGHT, outlineBtn, cardStyle, cardHeaderStyle, cardContentStyle, h1Style, subStyle, TYPE_SCALE } from "./constants";
 import { SimpleDropdown } from "../common/UIElements";
 import { EmptyState } from "../common/EmptyState";
@@ -39,15 +39,23 @@ export function SessionListWorkspace({
 }) {
   const { flags, activeClientId } = useFeatureFlags();
   const [statusFilter, setStatusFilter] = useState("All Status");
+  const [search, setSearch] = useState("");
 
   const clientData = activeClientId ? MOCK_CLIENT_DATA[activeClientId] : null;
 
-  const sessions = clientData?.sessions?.map((s, idx) => ({
+  const allSessions = clientData?.sessions?.map((s, idx) => ({
     id: `#SESSION-${idx + 1}`,
     timestamp: s.date,
     description: s.focus,
     notes: s.notes
   })) || [];
+
+  const sessions = search.trim()
+    ? allSessions.filter((s) =>
+        s.description?.toLowerCase().includes(search.toLowerCase()) ||
+        s.id.toLowerCase().includes(search.toLowerCase())
+      )
+    : allSessions;
 
   if (selectedSession) {
     return <SessionDetail session={selectedSession} onBack={onBack} />;
@@ -74,14 +82,11 @@ export function SessionListWorkspace({
               width={200}
             />
 
-            <div style={{ position: "relative", width: 320 }}>
-              <Search style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#9ca3af" }} size={18} />
-              <input 
-                type="text" 
-                placeholder="Search sessions..." 
-                style={{ width: "100%", height: 44, padding: "0 16px 0 40px", border: `1px solid ${DIVIDER}`, borderRadius: 4, fontSize: 14, outline: "none" }} 
-              />
-            </div>
+            <SearchInput
+              value={search}
+              onChange={setSearch}
+              placeholder="Search sessions..."
+            />
           </div>
         
         <div style={{ flex: 1, display: "flex", flexDirection: "column", gap: 20 }}>
