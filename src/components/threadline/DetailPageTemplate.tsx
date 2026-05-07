@@ -1,11 +1,7 @@
 import React from "react";
 import { ArrowLeft as BackArrow } from "lucide-react";
-import { BRAND, TYPE_SCALE, cardStyle, cardHeaderStyle, cardContentStyle, h1Style, subStyle } from "./constants";
-
-interface MetaField {
-  label: string;
-  value: React.ReactNode;
-}
+import { BRAND, cardStyle, cardHeaderStyle, cardContentStyle, h1Style, subStyle } from "./constants";
+import { ClientMetaBanner, MetaBannerField } from "../common/ClientMetaBanner";
 
 interface DetailPageTemplateProps {
   backLabel: string;
@@ -13,7 +9,7 @@ interface DetailPageTemplateProps {
   title: string;
   subtitle?: string;
   actionButton?: React.ReactNode;
-  metaFields: MetaField[];
+  metaFields: MetaBannerField[];
   children: React.ReactNode;
 }
 
@@ -49,17 +45,7 @@ export function DetailPageTemplate({
         </div>
 
         <div style={cardContentStyle}>
-          <div style={{
-            background: "#f8fafc", border: "1px solid #f1f5f9",
-            borderRadius: 12, display: "flex", flexWrap: "wrap", marginBottom: 32,
-          }}>
-            {metaFields.map(({ label, value }) => (
-              <div key={label} style={{ padding: "16px 24px", minWidth: 160, borderRight: "1px solid #f1f5f9" }}>
-                <div style={{ ...TYPE_SCALE.LabelMicro, marginBottom: 4 }}>{label}</div>
-                <div style={{ ...TYPE_SCALE.HeadingSmall }}>{value}</div>
-              </div>
-            ))}
-          </div>
+          <ClientMetaBanner fields={metaFields} style={{ marginBottom: 32 }} />
           {children}
         </div>
       </div>

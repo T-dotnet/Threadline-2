@@ -3,6 +3,7 @@ import { InterpRow } from "./components";
 import { Download as DownloadIcon } from "lucide-react";
 import { TEXT_PRIMARY, primaryBtn, TYPE_SCALE } from "./constants";
 import { DetailPageTemplate } from "./DetailPageTemplate";
+
 import { MOCK_CLIENTS } from "./mockData";
 
 export function AssessmentResultScreen({ clientId, onBack, onGuidelinesClick }: { clientId: string, onBack: () => void, onGuidelinesClick?: () => void }) {
@@ -50,7 +51,7 @@ export function AssessmentResultScreen({ clientId, onBack, onGuidelinesClick }: 
         </table>
       </div>
 
-      {/* Interpretation section */}
+      {/* Interpretation sections */}
       <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12, margin: "8px 0" }}>
           <h2 style={{ fontSize: 18, fontWeight: 700, color: TEXT_PRIMARY, margin: 0 }}>Clinical Interpretation</h2>
