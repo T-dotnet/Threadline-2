@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { DIVIDER } from '../../constants';
+// Using inline fallback values if constants aren't available, but we'll import them.
+import { DIVIDER } from '../threadline/constants';
 
 interface WorkspaceContainerProps {
   sidebarContent: React.ReactNode;

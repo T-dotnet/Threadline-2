@@ -1,5 +1,5 @@
 import React from "react";
-import { h1Style, h1SmallStyle, subStyle } from "../../constants";
+import { TEXT_PRIMARY, TEXT_SECONDARY, h1Style, h1SmallStyle, subStyle } from "../threadline/constants";
 
 interface SectionHeaderProps {
   title: string;

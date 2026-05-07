@@ -1,42 +1,29 @@
-import React, { CSSProperties } from "react";
-import { BRAND, TEXT_PRIMARY, DIVIDER } from "../../constants";
-
-type ButtonVariant = "primary" | "secondary" | "outline" | "ghost";
-type ButtonSize = "sm" | "md" | "lg";
+import React from "react";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: ButtonVariant;
-  size?: ButtonSize;
-  style?: CSSProperties;
+  variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
+  size?: 'sm' | 'md' | 'lg';
+  className?: string;
 }
 
-const BASE: CSSProperties = {
-  display: "inline-flex", alignItems: "center", justifyContent: "center", gap: 8,
-  fontFamily: "'Poppins', sans-serif", fontWeight: 600, cursor: "pointer",
-  border: "none", transition: "all 0.2s ease", letterSpacing: "0.01em",
+const variants = {
+  primary: "bg-gray-900 text-white hover:bg-gray-800",
+  secondary: "bg-gray-100 text-gray-900 hover:bg-gray-200",
+  outline: "border border-gray-300 text-gray-700 hover:bg-gray-50",
+  ghost: "text-gray-600 hover:text-gray-900 hover:bg-gray-100",
 };
 
-const variants: Record<ButtonVariant, CSSProperties> = {
-  primary: {
-    background: BRAND, color: "white", borderRadius: 8,
-    boxShadow: "0 4px 6px -1px rgba(6, 48, 44, 0.1), 0 2px 4px -2px rgba(6, 48, 44, 0.1)",
-  },
-  secondary: { background: "#e8f0ef", color: BRAND, borderRadius: 8 },
-  outline: { background: "white", color: TEXT_PRIMARY, border: `1px solid ${DIVIDER}`, borderRadius: 8 },
-  ghost:   { background: "transparent", color: TEXT_PRIMARY, borderRadius: 6 },
+const sizes = {
+  sm: "px-3 py-1.5 text-xs rounded-md",
+  md: "px-4 py-2 text-sm rounded-lg",
+  lg: "px-6 py-3 text-base rounded-lg",
 };
 
-const sizes: Record<ButtonSize, CSSProperties> = {
-  sm: { padding: "6px 16px", fontSize: 13 },
-  md: { padding: "10px 24px", fontSize: 14 },
-  lg: { padding: "12px 32px", fontSize: 15 },
-};
-
-export function Button({ variant = "primary", size = "md", style, ...props }: ButtonProps) {
+export function Button({ variant = 'primary', size = 'md', className = "", ...props }: ButtonProps) {
   return (
-    <button
-      style={{ ...BASE, ...variants[variant], ...sizes[size], ...style }}
-      {...props}
+    <button 
+      className={`flex items-center justify-center gap-2 font-medium transition-colors ${variants[variant]} ${sizes[size]} ${className}`}
+      {...props} 
     />
   );
 }

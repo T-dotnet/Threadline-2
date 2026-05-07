@@ -1,6 +1,6 @@
 import React from "react";
 import { LucideIcon } from "lucide-react";
-import { TEXT_PRIMARY, TEXT_SECONDARY, TEXT_DISABLED, DIVIDER, primaryBtn } from "../../constants";
+import { TEXT_PRIMARY, TEXT_SECONDARY, TEXT_DISABLED, DIVIDER, primaryBtn } from "../threadline/constants";
 
 interface EmptyStateProps {
   icon: LucideIcon;

@@ -98,6 +98,7 @@ function AppContent() {
       {!isPlayground && (
         <Navbar 
           onClientsClick={() => navigate('/clients')}
+          onPatientsClick={() => navigate('/patients')}
           onSessionsClick={() => navigate('/sessions')}
           onAssessmentsClick={() => navigate('/assessments')}
           onResourcesClick={() => navigate('/resources')}

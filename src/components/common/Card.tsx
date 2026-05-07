@@ -1,15 +1,13 @@
-import React, { CSSProperties } from "react";
-import { cardStyle } from "../../constants";
+import React from "react";
 
 interface CardProps {
   children: React.ReactNode;
-  style?: CSSProperties;
   className?: string;
 }
 
-export function Card({ children, style, className }: CardProps) {
+export function Card({ children, className = "" }: CardProps) {
   return (
-    <div style={{ ...cardStyle, ...style }} className={className}>
+    <div className={`bg-white border border-gray-200 rounded-xl ${className}`}>
       {children}
     </div>
   );
