@@ -1,18 +1,16 @@
 import React, { useState } from "react";
-import { 
-  Plus as AddIcon, 
-  ChevronRight, 
-  Play, 
-  SkipBack, 
-  Volume2, 
-  Maximize, 
-  Maximize2, 
-  Info, 
-  X, 
-  Copy, 
+import {
+  Plus as AddIcon,
+  Play,
+  SkipBack,
+  Volume2,
+  Maximize,
+  Maximize2,
+  Info,
+  X,
+  Copy,
   Edit3,
   Search,
-  FileText,
   Calendar,
   ArrowLeft as BackArrow,
   Download as DownloadIcon
@@ -25,8 +23,7 @@ import { useFeatureFlags } from "../../contexts/FeatureToggleContext";
 import { MOCK_CLIENT_DATA, MOCK_CLIENTS } from "./mockData";
 
 import { SectionHeader } from "../common/SectionHeader";
-import { StatusBadge } from "../common/StatusBadge";
-import { EntityCard } from "./components";
+import { SessionCard } from "./components";
 
 export function SessionListWorkspace({
   selectedSession,
@@ -95,20 +92,15 @@ export function SessionListWorkspace({
               style={{ padding: "100px 24px" }}
             />
           ) : (
-            sessions.map((s, i) => (
-              <EntityCard
+            sessions.map((s) => (
+              <SessionCard
                 key={s.id}
-                title={s.description || 'Session details'}
-                metadata={[
-                  { label: "Session ID", value: <span style={{ textTransform: "lowercase" }}>{s.id}</span> },
-                  { label: "Date", value: s.timestamp },
-                  ...(s.notes ? [{ label: "Session Summary", value: s.notes }] : [])
-                ]}
-                statusBadge={<StatusBadge status="completed" />}
-                rightAction={<ChevronRight size={24} color={TEXT_SECONDARY} />}
+                id={s.id}
+                title={s.description}
+                date={s.timestamp}
+                summary={s.notes}
                 onClick={() => onSessionSelect(s)}
-              >
-              </EntityCard>
+              />
             ))
           )}
         </div>

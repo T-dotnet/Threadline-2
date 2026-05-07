@@ -1,12 +1,11 @@
 import React, { useState, useRef } from "react";
-import { Search, Filter, Plus, MoreVertical, ChevronDown, ChevronUp, Cpu, CheckCircle, FileText } from "lucide-react";
+import { Search, Filter, Plus, Cpu, CheckCircle, FileText } from "lucide-react";
 import { TEXT_PRIMARY, TEXT_SECONDARY, DIVIDER, BRAND, primaryBtn, outlineBtn, h1Style, subStyle, cardStyle, cardContentStyle, TYPE_SCALE } from "./constants";
 import { useFeatureFlags } from "../../contexts/FeatureToggleContext";
 import { DocumentCompletenessModal } from "../modals/DocumentCompletenessModal";
-import { StatusBadge } from "../common/StatusBadge";
 import { EmptyState } from "../common/EmptyState";
 import { SectionHeader } from "../common/SectionHeader";
-import { EntityCard } from "./components";
+import { DocumentCard } from "./components";
 
 import { REQUIRED_DOCUMENTS, MOCK_DOCUMENTS as fallbackDocuments, MOCK_CLIENT_DATA } from "./mockData";
 
@@ -167,21 +166,13 @@ export function DocumentsWorkspace() {
               />
             ) : (
               documents.map((doc, idx) => (
-                <EntityCard
+                <DocumentCard
                   key={idx}
-                  title={doc.name}
-                  statusBadge={<StatusBadge status={doc.status.toLowerCase() as any} />}
-                  metadata={[
-                    ...(doc.status.toLowerCase() === 'uploaded' ? [{ label: "Type", value: doc.type }] : []),
-                    { label: "Creation Date", value: doc.creationDate },
-                    ...(doc.status.toLowerCase() === 'uploaded' && doc.uploadDate ? [{ label: "Upload Date", value: doc.uploadDate }] : [])
-                  ]}
-                  rightAction={
-                    <button style={{ background: "none", border: "none", cursor: "pointer", color: "#9ca3af", padding: 8 }}>
-                      <MoreVertical size={20} />
-                    </button>
-                  }
-                  onClick={() => {}}
+                  name={doc.name}
+                  type={doc.type}
+                  status={doc.status}
+                  creationDate={doc.creationDate}
+                  uploadDate={doc.uploadDate}
                 />
               ))
             )}
