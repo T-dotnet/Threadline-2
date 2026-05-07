@@ -1,7 +1,6 @@
 export * from "./Button";
 export * from "./Badge";
 export * from "./Card";
-export * from "./SearchInput";
 export * from "./StatusBadge";
 export * from "./SectionHeader";
 export * from "./EmptyState";
