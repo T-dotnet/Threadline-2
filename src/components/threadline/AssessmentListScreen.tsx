@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { TabBar, AssessmentCard } from "./components";
 import { Search as SearchIcon, Plus as AddIcon, ArrowLeft as BackArrow, AlertTriangle, Info, X, ChevronRight, Clock, FileX, CheckCircle } from "lucide-react";
+import { SearchInput } from "../common/SearchInput";
 import { TEXT_PRIMARY, TEXT_SECONDARY, DIVIDER, primaryBtn, BRAND, h1Style, subStyle, cardStyle, cardContentStyle, BRAND_LIGHT, outlineBtn } from "./constants";
 import { motion, AnimatePresence } from "motion/react";
 import { EvidenceWorkspace } from "./EvidenceWorkspace";
@@ -346,15 +347,11 @@ function AssessmentListScreenContent({ clientId, onBack }: { clientId: string, o
               <div style={cardStyle}>
                 <div style={cardContentStyle}>
                   <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: 24 }}>
-                    <div style={{ position: "relative", width: 320 }}>
-                      <SearchIcon style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#9ca3af" }} size={18} />
-                      <input
-                        value={search}
-                        onChange={e => setSearch(e.target.value)}
-                        placeholder="Search Assessment"
-                        style={{ width: "100%", height: 44, padding: "0 16px 0 40px", border: `1px solid ${DIVIDER}`, borderRadius: 8, fontSize: 14, outline: "none" }}
-                      />
-                    </div>
+                    <SearchInput
+                      value={search}
+                      onChange={setSearch}
+                      placeholder="Search Assessment"
+                    />
                   </div>
 
                   <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>

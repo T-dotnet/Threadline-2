@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Search, Plus as AddIcon, ChevronDown, AlertTriangle, FileX, Clock, CheckCircle } from "lucide-react";
+import { Plus as AddIcon, ChevronDown, AlertTriangle, FileX, Clock, CheckCircle } from "lucide-react";
+import { SearchInput } from "../common/SearchInput";
 import { TEXT_PRIMARY, TEXT_SECONDARY, TEXT_DISABLED, DIVIDER, primaryBtn, h1Style, subStyle, cardStyle, cardHeaderStyle, TYPE_SCALE } from "./constants";
 import { ClinicianTag } from "./components";
 import { MOCK_CLIENTS, MOCK_CLIENT_DATA } from "./mockData";
@@ -59,15 +60,11 @@ export function ClientListScreen({ onSelectClient }: { onSelectClient: (id: stri
             width={200}
           />
 
-          <div style={{ position: "relative", width: 320 }}>
-            <Search style={{ position: "absolute", left: 12, top: "50%", transform: "translateY(-50%)", color: "#9ca3af" }} size={18} />
-            <input 
-              placeholder="Search by name, Referred, or Id" 
-              style={{ width: "100%", height: 44, padding: "0 16px 0 40px", border: `1px solid ${DIVIDER}`, borderRadius: 4, fontSize: 14, outline: "none" }}
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-            />
-          </div>
+          <SearchInput
+            value={search}
+            onChange={setSearch}
+            placeholder="Search by name, Referred, or Id"
+          />
         </div>
 
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
